@@ -2,12 +2,10 @@ package zabbix_test
 
 import (
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
 	"testing"
-	"time"
 
 	zapi "github.com/tpretz/go-zabbix-api"
 )
@@ -18,8 +16,6 @@ var (
 )
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
-
 	var err error
 	_host, err = os.Hostname()
 	if err != nil {
@@ -47,7 +43,7 @@ func getAPI(t *testing.T) *zapi.API {
 	var c zapi.Config
 	c.Url = url
 
-	_api = zapi.NewAPI(c)
+	_api, _ = zapi.NewAPI(c)
 	_api.SetClient(http.DefaultClient)
 	v := os.Getenv("TEST_ZABBIX_VERBOSE")
 	if v != "" && v != "0" {

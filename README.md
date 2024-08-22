@@ -1,14 +1,18 @@
-# Go zabbix api
+# Go Zabbix API
 
 Note, this is not tested and is adjusted for use of tpretz/terraform-provider-zabbix
 
 [![GoDoc](https://godoc.org/github.com/tpretz/go-zabbix-api?status.svg)](https://godoc.org/github.com/tpretz/go-zabbix-api) [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://travis-ci.org/tpretz/go-zabbix-api.svg?branch=master)](https://travis-ci.org/tpretz/go-zabbix-api)
 
-This Go package provides access to Zabbix API.
+This Go package provides access to the Zabbix API. Due to dependencies, the
+minimum version required is 1.21.
 
-Tested on Zabbix 3.2, 3.4, 4.0, 4.2 and 4.4, but should work since 2.0 version.
+Tested on Zabbix 6.0 and 7.0.
 
-This package aims to support multiple zabbix resources from its API like trigger, application, host group, host, item, template..
+https://www.zabbix.com/documentation/6.0/en/manual/api
+https://www.zabbix.com/documentation/7.0/en/manual/api
+
+This package aims to provide a full-featured Go module for the Zabbix API.
 
 ## Install
 
@@ -20,22 +24,25 @@ Install it: `go get github.com/tpretz/go-zabbix-api`
 package main
 
 import (
-	"fmt"
+        "fmt"
 
-	"github.com/tpretz/go-zabbix-api"
+        "github.com/tpretz/go-zabbix-api"
 )
 
 func main() {
-	user := "MyZabbixUsername"
-	pass := "MyZabbixPassword"
-	api := zabbix.NewAPI("http://localhost/api_jsonrpc.php")
-	api.Login(user, pass)
+        user := "MyZabbixUsername"
+        pass := "MyZabbixPassword"
+        var config zabbix.Config
+        config.Url = "http://localhost/api_jsonrpc.php"
 
-	res, err := api.Version()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Connected to zabbix api v%s\n", res)
+        api := zabbix.NewAPI(config)
+        api.Login(user, pass)
+
+        res, err := api.Version()
+        if err != nil {
+                panic(err)
+        }
+        fmt.Printf("Connected to zabbix api v%s\n", res)
 }
 ```
 
@@ -44,14 +51,10 @@ func main() {
 ### Considerations
 
 You should run tests before using this package.
-Zabbix API doesn't match documentation in few details, which are changing in patch releases. 
+The Zabbix API doesn't match the documentation in a few details, which are changing in patch releases.
 
 Tests are not expected to be destructive, but you are advised to run them against not-production instance or at least make a backup.
 For a safer and more accurate testing we advice to run tests with following minimum versions which implements strict validation of valuemap for `get` method:
-
-- 4.0.13rc1 [6ead4fd7865](https://git.zabbix.com/projects/ZBX/repos/zabbix/commits/6ead4fd7865f24ba1246832caa867d33ee9773ba)
-- 4.2.7rc1 [a1d257bf6a3](https://git.zabbix.com/projects/ZBX/repos/zabbix/commits/a1d257bf6a3972e24a0044aa019d120eaf7a211a)
-- 4.4.0alpha3 [db94d75b4bf](https://git.zabbix.com/projects/ZBX/repos/zabbix/commits/db94d75b4bf5bfc72df3e01cd5fd4a57bc3784e3)
 
 For more information, please see issues [ZBX-3783](https://support.zabbix.com/browse/ZBX-3783) and [ZBX-3685](https://support.zabbix.com/browse/ZBX-3685)
 
